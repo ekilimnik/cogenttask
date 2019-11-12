@@ -59,7 +59,7 @@ sub process_files {
     foreach my $file (@files) {
                $file_to_check = "$filedirectory/$file";
                ($width, $height, $size, $format) = $im->Ping($file_to_check);
-               @myArray = ($width, $height, $size, $format );
+               @myArray = ($width, $height, $size, $format, 0 );
                @{$new_hash_one{$file_to_check}} = @myArray;
 
     }
@@ -71,18 +71,21 @@ sub check_doubles {
     for (keys %new_hash_one) {
      	    my @value_array_one = @{$new_hash_one{$_}};
      	    $filename_one = $_;
-            for (keys %new_hash_one) {
-                $filename_two = $_;
-                my @value_array_two = @{$new_hash_one{$_}};
-                if ($filename_one ne $filename_two) {
-                          if (($value_array_one[0] == $value_array_two[0]) && 
-                              ($value_array_one[1] == $value_array_two[1]) &&
-                              ($value_array_one[2] == $value_array_two[2]) &&
-                              ($value_array_one[3] eq $value_array_two[3]) 			
-                             )	
-                          {
-                               print "Found Duplicates:  $filename_one   $filename_two\n";
-                          }
+            if ($value_array_one[4] == 0) {
+                   for (keys %new_hash_one) {
+			$filename_two = $_;
+			my @value_array_two = @{$new_hash_one{$_}};
+			if ($filename_one ne $filename_two) {
+	         		if (($value_array_one[0] == $value_array_two[0]) && 
+                                    ($value_array_one[1] == $value_array_two[1]) &&
+                                    ($value_array_one[2] == $value_array_two[2]) &&
+                                    ($value_array_one[3] eq $value_array_two[3]) 			
+                                   )	
+		 		{
+					@{$new_hash_one{$filename_two}} = ($value_array_one[0],$value_array_one[1],$value_array_one[2],$value_array_one[3],1);
+					print "Found Duplicates:  $filename_one   $filename_two\n";
+		 		}
+			}
     		  }
           }	
     }
