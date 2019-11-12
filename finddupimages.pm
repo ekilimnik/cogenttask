@@ -27,12 +27,21 @@ sub process_directories {
         my $filedirectory;
 	foreach my $dicomdir (@dicomdir) {
 
-                opendir (DIR, "$initdir/$dicomdir");
+         	if (($dicomdir ne '.') && ($dicomdir ne '..')) {
 
-                @files = grep { !/^\./} readdir(DIR);
-                $filedirectory = "$initdir/$dicomdir";
+        		opendir (DIR, "$initdir/$dicomdir");
 
-                process_files(\@files,$filedirectory);
+	                if (index($dicomdir, '.jpg') != -1) {
+			      @files = $dicomdir;
+                              $filedirectory = "$initdir";  
+			}
+			else {
+                              @files = grep { !/^\./} readdir(DIR);
+                              $filedirectory = "$initdir/$dicomdir";
+	        	}
+
+                        process_files(\@files,$filedirectory);
+		}
 	}
 }
 
