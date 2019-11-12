@@ -21,6 +21,7 @@ my @dicomdir = readdir(DIR);
 closedir (DIR);
 
 &process_directories(@dicomdir);
+check_doubles();
 
 sub process_directories {
         my @dicomdir = @_;
@@ -58,12 +59,33 @@ sub process_files {
     foreach my $file (@files) {
                $file_to_check = "$filedirectory/$file";
                ($width, $height, $size, $format) = $im->Ping($file_to_check);
-               print "Check file $file_to_check with $width, $height, $size, $format\n";
-               @myArray = ($width, $height, $size, $format, 0 );
+               @myArray = ($width, $height, $size, $format );
                @{$new_hash_one{$file_to_check}} = @myArray;
 
     }
 }
 
+sub check_doubles {
+    my $filename_one;
+    my $filename_two;
+    for (keys %new_hash_one) {
+     	    my @value_array_one = @{$new_hash_one{$_}};
+     	    $filename_one = $_;
+            for (keys %new_hash_one) {
+                $filename_two = $_;
+                my @value_array_two = @{$new_hash_one{$_}};
+                if ($filename_one ne $filename_two) {
+                          if (($value_array_one[0] == $value_array_two[0]) && 
+                              ($value_array_one[1] == $value_array_two[1]) &&
+                              ($value_array_one[2] == $value_array_two[2]) &&
+                              ($value_array_one[3] eq $value_array_two[3]) 			
+                             )	
+                          {
+                               print "Found Duplicates:  $filename_one   $filename_two\n";
+                          }
+    		  }
+          }	
+    }
+}
 
 
